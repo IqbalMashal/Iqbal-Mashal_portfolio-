@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "title": "PDFlex",
+    "description": "PDFlex is an AI-powered tool that extracts and analyzes data from PDFs, allowing users to interact with documents through intelligent search and summarization features.",
+    "github": "https://github.com/yourusername/pdflex",
+    "live": "https://pdflex.vercel.app",
+    "img": "pdflex_landing_page.png",
+    "stack": [
+      "Next.js",
+      "TailwindCSS",
+      "Gemini",
+      "Convex"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "RentalX",
+    "description": "RentalX is a property rental management platform that helps landlords and tenants streamline property listings, bookings, and payments with an intuitive and secure interface.",
+    "github": "https://github.com/yourusername/rentalx",
+    "live": "https://rentalx.vercel.app",
+    "img": "rentalx_landing_page.png",
+    "stack": [
+      "React",
+      "Node.js",
+      "Express",
+      "HyGraph",
+      "TailwindCSS"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "AI MedicalBot",
+    "description": "AI MedicalBot is a chatbot that leverages AI to provide users with preliminary medical advice and health-related information, assisting in symptom analysis and suggesting possible next steps.",
+    "github": "https://github.com/yourusername/ai-medicalbot",
+    "live": "https://ai-medicalbot.vercel.app",
+    "img": "ai_medicalbot_landing_page.png",
+    "stack": [
+      "Python",
+      "Flask",
+      "Gemini",
+      "MongoDB",
+      "React"
+    ]
+  }
+]

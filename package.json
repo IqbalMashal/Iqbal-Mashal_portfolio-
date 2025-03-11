@@ -1,0 +1,47 @@
+{
+  "name": "my_portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^2.5.1",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@firebase/app": "^0.9.4",
+    "@firebase/firestore": "^3.8.4",
+    "@fortawesome/fontawesome-svg-core": "^6.3.0",
+    "@fortawesome/free-brands-svg-icons": "^6.3.0",
+    "@fortawesome/free-regular-svg-icons": "^6.3.0",
+    "@fortawesome/free-solid-svg-icons": "^6.3.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@next/font": "13.1.6",
+    "eslint": "8.34.0",
+    "eslint-config-next": "^14.0.1",
+    "firebase": "^9.17.2",
+    "framer-motion": "^9.0.4",
+    "next": "^14.1.1",
+    "protobufjs": "^7.2.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-helmet": "^6.1.0",
+    "react-scroll": "^1.8.9",
+    "react-slick": "^0.29.0",
+    "react-spinners": "^0.13.8",
+    "react-type-animation": "^2.1.2",
+    "slick-carousel": "^1.8.1",
+    "typewriter-effect": "^2.19.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/uuid": "^9.0.1",
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.21",
+    "tailwindcss": "^3.2.7"
+  }
+}
