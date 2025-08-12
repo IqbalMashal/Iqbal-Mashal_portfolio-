@@ -230,18 +230,6 @@ const About = () => {
           ))}
         </SimpleGrid>
       </Box>
-
-      {/* Call to Action */}
-      <Box 
-        textAlign="center" 
-        mt={16} 
-        p={8}
-        bg={colorMode === 'light' ? 'blue.50' : 'blue.900'}
-        borderRadius="2xl"
-        border="1px solid"
-        borderColor={colorMode === 'light' ? 'blue.100' : 'blue.700'}
-      >
-      </Box>
     </Container>
   );
 };
