@@ -11,8 +11,11 @@ import {
   Flex,
   Badge,
   Icon,
-  SimpleGrid
+  SimpleGrid,
+  Button,
+  Center
 } from "@chakra-ui/react";
+import { FiExternalLink } from "react-icons/fi";
 
 const About = () => {
   const { colorMode } = useColorMode();
@@ -230,6 +233,29 @@ const About = () => {
           ))}
         </SimpleGrid>
       </Box>
+      <Center>
+        <Button
+          colorScheme="blue"
+          variant="outline"
+          size="lg"
+          mt={8}
+          w={{ base: "full", md: "auto" }}
+          rightIcon={<Icon as={FiExternalLink} />}
+          onClick={() => window.open("/resume.pdf", "_blank")}
+          _hover={{
+            transform: "translateY(-2px)",
+            boxShadow: "lg",
+            bg: "blue.500",
+            color: "white",
+            borderColor: "blue.500"
+          }}
+          transition="all 0.2s"
+          borderWidth="2px"
+          fontWeight="semibold"
+        >
+          View My Resume
+        </Button>
+      </Center>
     </Container>
   );
 };
