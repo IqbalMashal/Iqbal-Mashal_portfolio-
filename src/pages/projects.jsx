@@ -9,8 +9,9 @@ import {
   Button,
   useColorMode,
   Flex,
-  Image,
-  useBreakpointValue 
+  useBreakpointValue,
+  Container,
+  Text
 } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
@@ -20,7 +21,9 @@ import projectShowcaseData from '../asset/api/project.json';
 
 const Project = () => {
   const { colorMode } = useColorMode();
-  const bgColor = { light: 'gray.100', dark: 'blackAlpha.500' };
+  const bgColor = { light: 'white', dark: 'gray.800' };
+  const borderColor = { light: 'gray.200', dark: 'gray.600' };
+  const textColor = { light: 'gray.600', dark: 'gray.300' };
   const router = useRouter();
 
   const [projectShowcase, setProjectShowcase] = useState(projectShowcaseData);
@@ -33,90 +36,174 @@ const Project = () => {
     dots: true,
     infinite: false,
     speed: 500,
-    slidesToShow: useBreakpointValue({ base: 1, sm: 2, md: 2, lg: 4 }),
-    slidesToScroll:1,
+    slidesToShow: useBreakpointValue({ base: 1, sm: 2, md: 2, lg: 3, xl: 4 }),
+    slidesToScroll: 1,
+    centerMode: false,
+    variableWidth: false,
+    // Add custom CSS for better spacing
+    dotsClass: "slick-dots custom-dots",
+    customPaging: (i) => (
+      <div
+        style={{
+          width: "12px",
+          height: "12px",
+          borderRadius: "50%",
+          backgroundColor: colorMode === 'light' ? '#CBD5E0' : '#4A5568'
+        }}
+      />
+    )
   };
-    
 
   return (
-    <>
-      <Heading textAlign="center" fontSize="4xl" mb="5">
-        My Project
-      </Heading>
-      <Slider {...settings}>
-        {projectShowcase.length > 0 ? (
-          projectShowcase.map((project) => (
-            <Box
-              key={project.title}
-              style={{ display: 'flex', justifyContent: 'center' }}
-            >
-              <Box
-                maxW="sm"
-                bg={bgColor[colorMode]}
-                borderRadius="5%"
-                pt={2.5}
-                boxShadow="md"
-                transition="transform 0.2s"
-                _hover={{ transform: 'scale(1.05)' }}
-              >
-                <Box m={3}>
-                  <Image src={project.img} borderRadius="2.5%" alt="Project" />
-                </Box>
-                <Box p={6}>
-                  <Heading size="md">{project.title}</Heading>
-                  <Box mt={4}>
-                    <p>{project.description}</p>
-                  </Box>
-                  <Box mt={4}>
-                    {Array.isArray(project.stack) ? (
-                      project.stack.map((stack, index) => (
-                        <Badge key={index} m="1">
-                          {stack.trim()}
-                        </Badge>
-                      ))
-                    ) : (
-                      <Badge>{project.stack}</Badge>
-                    )}
-                  </Box>
-                  <Box mt={4}>
-                    <Flex justifyContent="space-between">
+    <Container maxW="7xl" py={12}>
+      <Box textAlign="center" mb={12}>
+        <Heading 
+          fontSize={{ base: '3xl', md: '4xl', lg: '5xl' }} 
+          mb={4}
+          bgGradient="linear(to-r, blue.400, purple.500)"
+          bgClip="text"
+          fontWeight="extrabold"
+        >
+          My Projects
+        </Heading>
+        <Text 
+          fontSize={{ base: 'md', md: 'lg' }} 
+          color={textColor[colorMode]}
+          maxW="2xl"
+          mx="auto"
+        >
+          Explore my latest work and creative endeavors
+        </Text>
+      </Box>
+
+      <Box 
+        sx={{
+          '.slick-slide': {
+            padding: '0 12px', // Add horizontal padding between slides
+          },
+          '.slick-track': {
+            display: 'flex',
+            alignItems: 'stretch', // Make all cards same height
+          },
+          '.slick-slide > div': {
+            height: '100%',
+          },
+          '.custom-dots': {
+            bottom: '-50px',
+            '& li': {
+              margin: '0 6px',
+            },
+            '& li.slick-active div': {
+              backgroundColor: colorMode === 'light' ? '#3182CE' : '#63B3ED'
+            }
+          }
+        }}
+      >
+        <Slider {...settings}>
+          {projectShowcase.length > 0 ? (
+            projectShowcase.map((project, index) => (
+              <Box key={project.title} h="100%">
+                <Box
+                  bg={bgColor[colorMode]}
+                  borderRadius="xl"
+                  border="1px solid"
+                  borderColor={borderColor[colorMode]}
+                  overflow="hidden"
+                  boxShadow="lg"
+                  transition="all 0.3s ease-in-out"
+                  _hover={{ 
+                    transform: 'translateY(-8px)',
+                    boxShadow: '2xl',
+                    borderColor: colorMode === 'light' ? 'blue.200' : 'blue.400'
+                  }}
+                  h="100%"
+                  display="flex"
+                  flexDirection="column"
+                >
+
+
+                  {/* Content Container */}
+                  <Box p={6} flex="1" display="flex" flexDirection="column">
+                    <Heading 
+                      size="lg" 
+                      mb={3}
+                      color={colorMode === 'light' ? 'gray.800' : 'white'}
+                      noOfLines={1}
+                    >
+                      {project.title}
+                    </Heading>
+                    
+                    <Text 
+                      color={textColor[colorMode]}
+                      mb={4}
+                      fontSize="sm"
+                      lineHeight="1.6"
+                      flex="1"
+                      noOfLines={3}
+                    >
+                      {project.description}
+                    </Text>
+
+                    {/* Tech Stack */}
+                    <Box mb={6}>
+                      <Flex wrap="wrap" gap={2}>
+                        {Array.isArray(project.stack) ? (
+                          project.stack.map((stack, stackIndex) => (
+                            <Badge 
+                              key={stackIndex}
+                              colorScheme="blue"
+                              variant="subtle"
+                              fontSize="xs"
+                              px={2}
+                              py={1}
+                              borderRadius="full"
+                            >
+                              {stack.trim()}
+                            </Badge>
+                          ))
+                        ) : (
+                          <Badge 
+                            colorScheme="blue"
+                            variant="subtle"
+                            fontSize="xs"
+                            px={2}
+                            py={1}
+                            borderRadius="full"
+                          >
+                            {project.stack}
+                          </Badge>
+                        )}
+                      </Flex>
+                    </Box>
+
+                    {/* Action Buttons */}
+                    <Flex gap={3} mt="auto">
                       <Button
-                        href={project.live}
-                        bg={
-                          colorMode === 'light' ? 'gray.300' : 'blackAlpha.500'
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        variant="outline"
-                        leftIcon={
-                          <FontAwesomeIcon
-                            icon={faGlobe}
-                            className={`text-3xl ${
-                              colorMode === 'light' ? 'text-black' : 'text-white'
-                            }`}
-                          />
-                        }
+                        size="sm"
+                        colorScheme="blue"
+                        variant="solid"
+                        leftIcon={<FontAwesomeIcon icon={faGlobe} />}
                         onClick={() => handleLinkClick(project.live)}
+                        flex="1"
+                        _hover={{
+                          transform: 'translateY(-2px)',
+                          boxShadow: 'md'
+                        }}
                       >
                         Live Demo
                       </Button>
                       <Button
-                        href={project.github}
-                        bg={
-                          colorMode === 'light' ? 'gray.300' : 'blackAlpha.500'
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        size="sm"
                         variant="outline"
-                        leftIcon={
-                          <FontAwesomeIcon
-                            icon={faGithub}
-                            className={`text-3xl ${
-                              colorMode === 'light' ? 'text-black' : 'text-white'
-                            }`}
-                          />
-                        }
+                        colorScheme="gray"
+                        leftIcon={<FontAwesomeIcon icon={faGithub} />}
                         onClick={() => handleLinkClick(project.github)}
+                        flex="1"
+                        _hover={{
+                          transform: 'translateY(-2px)',
+                          boxShadow: 'md',
+                          borderColor: 'gray.400'
+                        }}
                       >
                         Repository
                       </Button>
@@ -124,15 +211,20 @@ const Project = () => {
                   </Box>
                 </Box>
               </Box>
+            ))
+          ) : (
+            <Box textAlign="center" py={20}>
+              <Heading size="md" color={textColor[colorMode]} mb={2}>
+                No Projects Found
+              </Heading>
+              <Text color={textColor[colorMode]}>
+                Check back soon for exciting new projects!
+              </Text>
             </Box>
-          ))
-        ) : (
-          <Box textAlign="center" fontSize="xl">
-            No project showcases found.
-          </Box>
-        )}
-      </Slider>
-    </>
+          )}
+        </Slider>
+      </Box>
+    </Container>
   );
 };
 

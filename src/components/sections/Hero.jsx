@@ -1,4 +1,4 @@
-import { Box, Flex, Center, VStack, Text } from "@chakra-ui/react";
+import { Box, Flex, VStack, Text } from "@chakra-ui/react";
 import { TypeAnimation } from "react-type-animation";
 import GithubIcon from "../ui/GithubIcon";
 import LinkedinIcon from "../ui/LinkedinIcon";

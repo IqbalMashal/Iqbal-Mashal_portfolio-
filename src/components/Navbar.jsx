@@ -5,6 +5,7 @@ import DarkModeSwitch from "../components/ui/DarkModeSwitch";
 import { useRouter } from 'next/router';
 import { Link as ScrollLink, animateScroll as scroll } from 'react-scroll';
 
+
 const Navbar = () => {
   const { isOpen, onToggle } = useDisclosure();
   const [isMobile, setIsMobile] = useState(false);
@@ -17,9 +18,9 @@ const Navbar = () => {
     return router.pathname === route;
   };
 
-  const scrollToTop = () => {
-    scroll.scrollToTop();
-  };
+  // const scrollToTop = () => {
+  //   scroll.scrollToTop();
+  // };
 
   useEffect(() => {
     handleResize();
@@ -28,7 +29,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="mb-7">
+    <div className="mb-5">
       <nav className="flex items-center justify-between flex-wrap p-6 ">
         <div className="flex items-center flex-shrink-0 mr-6">
           <Link as={NextLink} href="/" passHref={true} legacyBehavior={true}>
@@ -52,29 +53,32 @@ const Navbar = () => {
           <div className={`text-sm ${isMobile ? 'block' : 'flex'} lg:flex-grow`}>
             <div className={`${isMobile ? '' : 'flex justify-end'}`}>
               <ScrollLink
-                to="projects"
-                smooth={true}
-                duration={500}
-                className={`block text-xl mr-4  ${isActive('/projects') ? 'font-bold ' : 'font-medium'} cursor-pointer`}
-                onClick={scrollToTop}
-              >
-                Projects
-              </ScrollLink>
-              <ScrollLink
                 to="about"
                 smooth={true}
                 duration={500}
-                className={`block text-xl  mr-4 ${isActive('/about') ? 'font-bold ' : 'font-medium'} cursor-pointer`}
-                onClick={scrollToTop}
+                offset={-100}   // replace 64 with your navbar height
+                className={`block text-xl  mr-4 ${isActive('/avbout') ? 'font-bold ' : 'font-medium'} cursor-pointer`}
+                // onClick={scrolToTop}
               >
                 About
+              </ScrollLink>
+              <ScrollLink
+                to="projects"
+                smooth={true}
+                duration={500}
+                offset={-150}   // replace 64 with your navbar height
+                className={`block text-xl mr-4  ${isActive('/projects') ? 'font-bold ' : 'font-medium'} cursor-pointer`}
+                // onClick={scrollToTop}
+              >
+                Projects
               </ScrollLink>
               <ScrollLink
                 to="contact"
                 smooth={true}
                 duration={500}
+                offset={-90}   // replace 64 with your navbar height
                 className={`block text-xl  mr-4 ${isActive('/contact') ? 'font-bold' : 'font-medium'} cursor-pointer`}
-                onClick={scrollToTop}
+                // onClick={scrollToTop}
               >
                 Contact
               </ScrollLink>

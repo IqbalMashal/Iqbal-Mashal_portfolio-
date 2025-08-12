@@ -1,6 +1,24 @@
-import { initializeApp } from "@firebase/app";
+import { initializeApp, getApps, getApp } from "@firebase/app";
 import { addDoc, collection, getFirestore, serverTimestamp } from "@firebase/firestore";
-import { FormControl, FormLabel, Input, Button, Box, Heading, useColorMode, Textarea, Text, Flex, Link } from "@chakra-ui/react";
+import { 
+  FormControl, 
+  FormLabel, 
+  Input, 
+  Button, 
+  Box, 
+  Heading, 
+  useColorMode, 
+  Textarea, 
+  Text, 
+  Flex, 
+  Link,
+  Container,
+  VStack,
+  HStack,
+  useToast,
+  FormErrorMessage,
+  Icon
+} from "@chakra-ui/react";
 
 import { useState } from "react";
 import { faPhone, faEnvelope, faLocationDot } from "@fortawesome/free-solid-svg-icons";
@@ -8,16 +26,20 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { v4 as uuidv4 } from 'uuid';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCUcqxTcbOssPiKqg6Weg256KkUlT_0Vxg",
-    authDomain: "my-contact-form-5be52.firebaseapp.com",
-    projectId: "my-contact-form-5be52",
-    storageBucket: "my-contact-form-5be52.appspot.com",
-    messagingSenderId: "507303115058",
-    appId: "1:507303115058:web:5d9baf3ca19f238e35ff2b"
+  apiKey: "AIzaSyBNOK53A9UKw8pryXNB-BlElVl3h8xL92g",
+  authDomain: "portfolio-841bd.firebaseapp.com",
+  projectId: "portfolio-841bd",
+  storageBucket: "portfolio-841bd.firebasestorage.app",
+  messagingSenderId: "357811972817",
+  appId: "1:357811972817:web:d9632b6444450ab753f3f0",
+  measurementId: "G-MQJVBZB9L5"
 };
 
-const app = initializeApp(firebaseConfig);
+// Check if Firebase is already initialized, if not initialize it
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
+
+
 
 const Contact = () => {
   const [name, setName] = useState('');
@@ -25,9 +47,22 @@ const Contact = () => {
   const [contactnum, setContactNum] = useState('');
   const [message, setMessage] = useState('');
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
   const { colorMode } = useColorMode();
+  const toast = useToast();
+
+  const bgColor = { light: 'white', dark: 'gray.800' };
+  const borderColor = { light: 'gray.200', dark: 'gray.600' };
+  const textColor = { light: 'gray.600', dark: 'gray.300' };
+  const iconColor = { light: 'blue.500', dark: 'blue.400' };
 
   const handleChange = ({ target: { name, value } }) => {
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+
     switch (name) {
       case 'name':
         setName(value);
@@ -46,22 +81,41 @@ const Contact = () => {
     }
   };
 
-  const getFontAwesomeIcon = (icon) => (
-    <FontAwesomeIcon
-      icon={icon}
-      className={`text-xl mx-2 ${colorMode === "light" ? "text-black" : "text-white"}`}
-    />
-  );
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!name.trim()) newErrors.name = 'Name is required';
+    if (!email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+    if (!contactnum.trim()) {
+      newErrors.contactnum = 'Contact number is required';
+    } else if (!/^\+?[\d\s\-\(\)]+$/.test(contactnum)) {
+      newErrors.contactnum = 'Please enter a valid contact number';
+    }
+    if (!message.trim()) newErrors.message = 'Message is required';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Check if any required field is empty
-    if (!name || !email || !contactnum || !message) {
-      alert("Please fill out all the required fields.");
+    if (!validateForm()) {
+      toast({
+        title: "Form Error",
+        description: "Please fix the errors below and try again.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
       return;
     }
 
+    setIsSubmitting(true);
     const id = uuidv4();
 
     try {
@@ -80,63 +134,349 @@ const Contact = () => {
       setContactNum('');
       setMessage('');
       setFormSubmitted(true);
+      
+      toast({
+        title: "Message Sent!",
+        description: "Thank you for your message. I'll get back to you soon!",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
       console.error("Error adding document: ", error);
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  const resetForm = () => {
+    setFormSubmitted(false);
+    setName('');
+    setEmail('');
+    setContactNum('');
+    setMessage('');
+    setErrors({});
+  };
+
   return (
-    <Flex height="100vh" justifyContent="center" flexDirection="column">
-      <Flex flexDirection={["column", "row"]} justifyContent={["center", "space-around"]} alignItems={["center", "flex-start"]}>
-        <Box w={["100%", "50%"]} textAlign={["center", "left"]} p={5} borderRadius={3}>
-          <Box mb={5} ms={3} me={3} border="1px" p={5} borderRadius={2}>
+    <Container maxW="7xl" py={16}>
+      {/* Header Section */}
+      <Box textAlign="center" mb={16}>
+        <Heading 
+          fontSize={{ base: '3xl', md: '4xl', lg: '5xl' }} 
+          mb={4}
+          bgGradient="linear(to-r, blue.400, purple.500)"
+          bgClip="text"
+          fontWeight="extrabold"
+        >
+          Get In Touch
+        </Heading>
+        <Text 
+          fontSize={{ base: 'md', md: 'lg' }} 
+          color={textColor[colorMode]}
+          maxW="2xl"
+          mx="auto"
+        >
+          Have a question or want to work together? I&apos;d love to hear from you.
+        </Text>
+      </Box>
+
+      <Flex 
+        direction={{ base: 'column', lg: 'row' }} 
+        gap={12}
+        align="stretch"
+      >
+        {/* Contact Form */}
+        <Box flex="2">
+          <Box
+            bg={bgColor[colorMode]}
+            p={8}
+            borderRadius="2xl"
+            border="1px solid"
+            borderColor={borderColor[colorMode]}
+            boxShadow="xl"
+          >
             {formSubmitted ? (
-              <Heading size="lg" mb={8}>Thank you for filling out the form. I will reply to you via email.</Heading>
+              <VStack spacing={6} textAlign="center" py={8}>
+                <Box
+                  w={16}
+                  h={16}
+                  borderRadius="full"
+                  bg="green.100"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  mb={4}
+                >
+                  <Text fontSize="2xl" color="green.500">✓</Text>
+                </Box>
+                <Heading size="lg" color="green.500" mb={4}>
+                  Message Sent Successfully!
+                </Heading>
+                <Text color={textColor[colorMode]} fontSize="lg" mb={6}>
+                  Thank you for reaching out! I&apos;ll get back to you within 24 hours.
+                </Text>
+                <Button
+                  colorScheme="blue"
+                  size="lg"
+                  onClick={resetForm}
+                  _hover={{
+                    transform: 'translateY(-2px)',
+                    boxShadow: 'lg'
+                  }}
+                >
+                  Send Another Message
+                </Button>
+              </VStack>
             ) : (
               <form onSubmit={handleSubmit}>
-                <Heading textAlign="center" mb={8}>Get in touch</Heading>
-                <FormControl>
-                  <FormLabel>Name</FormLabel>
-                  <Input type="text" border="1px" name="name" value={name} onChange={handleChange} placeholder="Enter your name"/>
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Email</FormLabel>
-                  <Input type="email" border="1px" name="email" value={email} onChange={handleChange} placeholder="Enter your email"/>
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Contact Number</FormLabel>
-                  <Input type="number" pattern="[0-9]*" inputMode="numeric" border="1px" name="contactnum" value={contactnum} onChange={handleChange} placeholder="Enter your contact number"/>
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Message</FormLabel>
-                  <Textarea name="message" border="1px" value={message} onChange={handleChange} placeholder="Enter your message"/>
-                </FormControl>
-                <Button type="submit" onClick={handleSubmit} mt={5} w={["50%", "100%"]}>Submit</Button>
+                <VStack spacing={6}>
+                  <Heading size="lg" mb={2} textAlign="center">
+                    Send Me a Message
+                  </Heading>
+                  
+                  <HStack spacing={4} w="100%">
+                    <FormControl isInvalid={errors.name} flex="1">
+                      <FormLabel fontWeight="semibold">Name *</FormLabel>
+                      <Input
+                        type="text"
+                        name="name"
+                        value={name}
+                        onChange={handleChange}
+                        placeholder="Your full name"
+                        size="lg"
+                        borderColor={borderColor[colorMode]}
+                        _hover={{ borderColor: 'blue.300' }}
+                        _focus={{ 
+                          borderColor: 'blue.500',
+                          boxShadow: '0 0 0 1px #3182CE'
+                        }}
+                      />
+                      <FormErrorMessage>{errors.name}</FormErrorMessage>
+                    </FormControl>
+                  </HStack>
+
+                  <HStack spacing={4} w="100%">
+                    <FormControl isInvalid={errors.email} flex="1">
+                      <FormLabel fontWeight="semibold">Email *</FormLabel>
+                      <Input
+                        type="email"
+                        name="email"
+                        value={email}
+                        onChange={handleChange}
+                        placeholder="your.email@example.com"
+                        size="lg"
+                        borderColor={borderColor[colorMode]}
+                        _hover={{ borderColor: 'blue.300' }}
+                        _focus={{ 
+                          borderColor: 'blue.500',
+                          boxShadow: '0 0 0 1px #3182CE'
+                        }}
+                      />
+                      <FormErrorMessage>{errors.email}</FormErrorMessage>
+                    </FormControl>
+
+                    <FormControl isInvalid={errors.contactnum} flex="1">
+                      <FormLabel fontWeight="semibold">Contact Number *</FormLabel>
+                      <Input
+                        type="tel"
+                        name="contactnum"
+                        value={contactnum}
+                        onChange={handleChange}
+                        placeholder="+1 (555) 123-4567"
+                        size="lg"
+                        borderColor={borderColor[colorMode]}
+                        _hover={{ borderColor: 'blue.300' }}
+                        _focus={{ 
+                          borderColor: 'blue.500',
+                          boxShadow: '0 0 0 1px #3182CE'
+                        }}
+                      />
+                      <FormErrorMessage>{errors.contactnum}</FormErrorMessage>
+                    </FormControl>
+                  </HStack>
+
+                  <FormControl isInvalid={errors.message}>
+                    <FormLabel fontWeight="semibold">Message *</FormLabel>
+                    <Textarea
+                      name="message"
+                      value={message}
+                      onChange={handleChange}
+                      placeholder="Tell me about your project or just say hello!"
+                      size="lg"
+                      rows={6}
+                      resize="vertical"
+                      borderColor={borderColor[colorMode]}
+                      _hover={{ borderColor: 'blue.300' }}
+                      _focus={{ 
+                        borderColor: 'blue.500',
+                        boxShadow: '0 0 0 1px #3182CE'
+                      }}
+                    />
+                    <FormErrorMessage>{errors.message}</FormErrorMessage>
+                  </FormControl>
+
+                  <Button
+                    type="submit"
+                    colorScheme="blue"
+                    size="lg"
+                    w="100%"
+                    isLoading={isSubmitting}
+                    loadingText="Sending..."
+                    _hover={{
+                      transform: 'translateY(-2px)',
+                      boxShadow: 'lg'
+                    }}
+                    transition="all 0.2s"
+                  >
+                    Send Message
+                  </Button>
+                </VStack>
               </form>
             )}
           </Box>
         </Box>
-        <Box border="1px" borderRadius={5} p={5} ml={[0, 5]} mt={[10, 0]}>
-          <Heading mb={5} >Contact Information</Heading>
-          <Box me={5} textAlign={["center", "left"]}>
-            <Text mt={5}>
-              {getFontAwesomeIcon(faPhone)} +1 (674)-512-5106
-            </Text>
-            <Link href='iqbal.mashal077@gmail.com'>
-              <Text mt={5}>
-                {getFontAwesomeIcon(faEnvelope)} iqbal.mashal077@gmail.com
-              </Text>
-            </Link>
-            <Link href="https://goo.gl/maps/XAoQcfPffVfVD83c8">
-              <Text mt={5}>
-                {getFontAwesomeIcon(faLocationDot)} Toronto, Ontario
-              </Text>
-            </Link>
+
+        {/* Contact Information */}
+        <Box flex="1">
+          <Box
+            bg={bgColor[colorMode]}
+            p={8}
+            borderRadius="2xl"
+            border="1px solid"
+            borderColor={borderColor[colorMode]}
+            boxShadow="xl"
+            h="fit-content"
+          >
+            <VStack spacing={8} align="stretch">
+              <Heading size="lg" textAlign="center" mb={4}>
+                Contact Information
+              </Heading>
+              
+              <VStack spacing={6} align="stretch">
+                <Flex
+                  align="center"
+                  p={4}
+                  borderRadius="lg"
+                  bg={colorMode === 'light' ? 'gray.50' : 'gray.700'}
+                  _hover={{ 
+                    bg: colorMode === 'light' ? 'blue.50' : 'blue.900',
+                    transform: 'translateX(4px)'
+                  }}
+                  transition="all 0.2s"
+                  cursor="pointer"
+                >
+                  <Box
+                    w={12}
+                    h={12}
+                    borderRadius="full"
+                    bg={iconColor[colorMode]}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    mr={4}
+                  >
+                    <FontAwesomeIcon icon={faPhone} color="white" />
+                  </Box>
+                  <Box>
+                    <Text fontWeight="semibold" fontSize="sm" color={textColor[colorMode]}>
+                      PHONE
+                    </Text>
+                    <Text fontSize="lg" fontWeight="medium">
+                      +1 (674)-512-5106
+                    </Text>
+                  </Box>
+                </Flex>
+
+                <Link href="mailto:iqbal.mashal077@gmail.com" _hover={{ textDecoration: 'none' }}>
+                  <Flex
+                    align="center"
+                    p={4}
+                    borderRadius="lg"
+                    bg={colorMode === 'light' ? 'gray.50' : 'gray.700'}
+                    _hover={{ 
+                      bg: colorMode === 'light' ? 'blue.50' : 'blue.900',
+                      transform: 'translateX(4px)'
+                    }}
+                    transition="all 0.2s"
+                  >
+                    <Box
+                      w={12}
+                      h={12}
+                      borderRadius="full"
+                      bg={iconColor[colorMode]}
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      mr={4}
+                    >
+                      <FontAwesomeIcon icon={faEnvelope} color="white" />
+                    </Box>
+                    <Box>
+                      <Text fontWeight="semibold" fontSize="sm" color={textColor[colorMode]}>
+                        EMAIL
+                      </Text>
+                      <Text fontSize="lg" fontWeight="medium">
+                        iqbal.mashal077@gmail.com
+                      </Text>
+                    </Box>
+                  </Flex>
+                </Link>
+
+                <Link href="https://maps.app.goo.gl/W3Nm7Fn2yAzzEjza9" isExternal _hover={{ textDecoration: 'none' }}>
+                  <Flex
+                    align="center"
+                    p={4}
+                    borderRadius="lg"
+                    bg={colorMode === 'light' ? 'gray.50' : 'gray.700'}
+                    _hover={{ 
+                      bg: colorMode === 'light' ? 'blue.50' : 'blue.900',
+                      transform: 'translateX(4px)'
+                    }}
+                    transition="all 0.2s"
+                  >
+                    <Box
+                      w={12}
+                      h={12}
+                      borderRadius="full"
+                      bg={iconColor[colorMode]}
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      mr={4}
+                    >
+                      <FontAwesomeIcon icon={faLocationDot} color="white" />
+                    </Box>
+                    <Box>
+                      <Text fontWeight="semibold" fontSize="sm" color={textColor[colorMode]}>
+                        LOCATION
+                      </Text>
+                      <Text fontSize="lg" fontWeight="medium">
+                        Toronto, Ontario
+                      </Text>
+                    </Box>
+                  </Flex>
+                </Link>
+              </VStack>
+
+              <Box mt={8} p={6} bg={colorMode === 'light' ? 'blue.50' : 'blue.900'} borderRadius="lg">
+                <Text textAlign="center" color={textColor[colorMode]} fontSize="sm">
+                  I typically respond within 24 hours. Looking forward to hearing from you!
+                </Text>
+              </Box>
+            </VStack>
           </Box>
         </Box>
       </Flex>
-    </Flex>
+    </Container>
   );
-}
+};
 
 export default Contact;

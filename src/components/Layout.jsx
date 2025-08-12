@@ -18,7 +18,15 @@ const Layout = ({ children }) => {
   
   return (
     <>
-      <Navbar />
+      <Box 
+        position="sticky" 
+        top="0" 
+        zIndex="sticky"  // Chakra UI provides this token for zIndex
+        bg={colorMode === "light" ? "white" : "gray.800"} // background so it doesn't overlap transparent
+        boxShadow="sm"
+      >
+        <Navbar />
+      </Box>
       {loading ? (
           <Box
             height="100vh"
